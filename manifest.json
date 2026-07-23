@@ -1,0 +1,64 @@
+{
+  "manifest_version": 3,
+  "name": "Gonona — AI Token & Prompt Bridge",
+  "version": "0.1.0",
+  "description": "Live token counter, prompt optimizer, and 1-click context bridge for ChatGPT, Claude, Gemini, and Grok.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://chatgpt.com/*",
+    "https://chat.openai.com/*",
+    "https://claude.ai/*",
+    "https://gemini.google.com/*",
+    "https://chatglm.cn/*",
+    "https://kimi.moonshot.cn/*",
+    "https://grok.com/*"
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": "icons/icon48.png"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*",
+        "https://chatglm.cn/*",
+        "https://kimi.moonshot.cn/*",
+        "https://grok.com/*"
+      ],
+      "js": [
+        "site-config.js",
+        "vendor/gpt-tokenizer.bundle.js",
+        "tokenizer.js",
+        "optimizer.js",
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "inject.js"
+      ],
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*",
+        "https://chatglm.cn/*",
+        "https://kimi.moonshot.cn/*",
+        "https://grok.com/*"
+      ]
+    }
+  ]
+}
