@@ -10,13 +10,19 @@ function render(stats) {
   if (isStale) return;
 
   const siteName = stats.site ? stats.site.charAt(0).toUpperCase() + stats.site.slice(1) : "Chat";
+  const limitText = stats.limit ? stats.limit.toLocaleString() : "128,000";
   document.getElementById("site").textContent = siteName;
   document.getElementById("percent-big").textContent = stats.percent;
-  document.getElementById("limit").textContent = stats.limit ? stats.limit.toLocaleString() : "128,000";
   document.getElementById("in-tokens").textContent = stats.promptTokens ? stats.promptTokens.toLocaleString() : "0";
   document.getElementById("out-tokens").textContent = stats.completionTokens ? stats.completionTokens.toLocaleString() : "0";
-  document.getElementById("msgs-left").textContent = stats.msgsLeftText || "—";
-  document.getElementById("runway").textContent = stats.runwayText || "—";
+  const limitIn = document.getElementById("limit-in");
+  const limitOut = document.getElementById("limit-out");
+  if (limitIn) limitIn.textContent = limitText;
+  if (limitOut) limitOut.textContent = limitText;
+  document.getElementById("msgs-left").textContent =
+    typeof stats.messageCount === "number" ? stats.messageCount.toLocaleString() : "—";
+  document.getElementById("runway").textContent =
+    typeof stats.remaining === "number" ? `${stats.remaining.toLocaleString()} tokens` : "—";
 
   // Arc Gauge SVG path stroke-dashoffset (total length is 219.911 for r=70 semi-circle)
   const arcEl = document.getElementById("gauge-arc");
@@ -140,14 +146,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  const optimizeBtn = document.getElementById("optimize-btn");
-  if (optimizeBtn) {
-    optimizeBtn.addEventListener("click", () => {
-      sendAction("optimize");
-      showToast("Prompt optimized");
-    });
-  }
-
   const resetBtn = document.getElementById("reset-btn");
   if (resetBtn) {
     resetBtn.addEventListener("click", () => {
@@ -155,6 +153,13 @@ document.addEventListener("DOMContentLoaded", () => {
       showToast("Counters reset");
     });
   }
+
+  document.querySelectorAll(".site-link").forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      chrome.tabs.create({ url: "https://gonona.vercel.app/" });
+    });
+  });
 
   loadStats();
 });

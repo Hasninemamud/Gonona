@@ -5,68 +5,36 @@
   <title>Gonona</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #FFF2DF;
-      --panel: #ffffff;
-      --line: rgba(96,116,86,0.22);
-      --text-hi: #2d3a28;
-      --text-mid: #607456;
-      --text-low: #8fa888;
-      --sage: #607456;
-      --sage-light: #a8c49a;
-      --cream: #FFF2DF;
-      --amber: #e8a849;
-      --coral: #e07856;
-    }
-
-    @keyframes rise {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes pulse-dot {
-      0%, 100% { box-shadow: 3px 3px 0 var(--sage); }
-      50% { box-shadow: 3px 3px 0 var(--amber); }
+      --bg: #f7f6f1;
+      --card: #ffffff;
+      --border: #2c2c2c;
+      --border-soft: #d4d2c8;
+      --text: #1a1a1a;
+      --muted: #8a8a7a;
+      --sage: #6b7c5a;
+      --sage-track: #e4e2d8;
+      --exact: #c4a035;
     }
 
     body {
-      width: 300px;
+      width: 320px;
       font-family: 'Plus Jakarta Sans', sans-serif;
-      color: var(--text-hi);
+      background: var(--bg);
+      color: var(--text);
       -webkit-font-smoothing: antialiased;
-      background:
-        radial-gradient(ellipse 90% 60% at 10% -20%, rgba(168,196,154,0.5), transparent 55%),
-        radial-gradient(ellipse 70% 50% at 100% 0%, rgba(232,168,73,0.2), transparent 50%),
-        linear-gradient(165deg, #FFF2DF 0%, #f5e9d0 50%, #e8f0e2 100%);
-    }
-
-    .shell {
-      position: relative;
-      padding: 16px 14px 14px;
-      overflow: hidden;
-    }
-    .shell::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      opacity: 0.3;
-      pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%60607456' fill-opacity='0.07'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     }
 
     .panel {
-      position: relative;
-      z-index: 1;
-      background: rgba(255,255,255,0.72);
-      border: 2.5px solid var(--sage);
-      border-radius: 20px;
+      background: var(--card);
+      margin: 10px;
       padding: 16px 14px 14px;
-      box-shadow: 6px 6px 0 var(--sage);
-      backdrop-filter: blur(8px);
-      animation: rise 0.45s ease both;
+      border: 1.5px solid var(--border);
+      border-radius: 16px;
     }
 
     /* Header */
@@ -74,466 +42,373 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 14px;
       padding-bottom: 12px;
-      border-bottom: 2px dashed var(--line);
-    }
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      min-width: 0;
+      margin-bottom: 8px;
+      border-bottom: 1px solid var(--border-soft);
     }
     .dot {
-      width: 12px;
-      height: 12px;
+      width: 10px;
+      height: 10px;
       border-radius: 50%;
       background: var(--sage);
-      border: 2.5px solid var(--text-hi);
       flex: none;
-      animation: pulse-dot 2.4s ease-in-out infinite;
     }
-    .dot.exact {
-      background: var(--amber);
-      animation: none;
-      box-shadow: 3px 3px 0 var(--coral);
-    }
+    .dot.exact { background: var(--exact); }
     .title {
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 800;
-      letter-spacing: -0.6px;
+      letter-spacing: -0.4px;
       line-height: 1;
     }
     .site-pill {
       font-size: 10px;
-      font-weight: 700;
-      color: var(--text-hi);
-      background: rgba(255,255,255,0.7);
-      border: 2px solid var(--sage);
-      padding: 2px 9px;
-      border-radius: 999px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
       text-transform: capitalize;
-      white-space: nowrap;
+      line-height: 1.2;
     }
     .mode-label {
       margin-left: auto;
-      font-family: 'JetBrains Mono', monospace;
       font-size: 9px;
       font-weight: 700;
-      letter-spacing: 1.2px;
-      color: var(--text-low);
+      letter-spacing: 0.8px;
+      color: var(--muted);
       text-transform: uppercase;
-      flex: none;
     }
-    .mode-label.exact { color: var(--amber); }
-
-    .block-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 1.4px;
-      text-transform: uppercase;
-      color: var(--text-low);
-      margin-bottom: 6px;
-    }
-
-    .window-text {
-      text-align: center;
-      font-size: 11px;
-      color: var(--text-mid);
-      font-weight: 600;
-      margin-bottom: 2px;
-    }
-    .window-text b {
-      color: var(--text-hi);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10.5px;
-      font-weight: 700;
-    }
+    .mode-label.exact { color: var(--exact); }
 
     /* Gauge */
     .gauge-wrapper {
       position: relative;
-      width: 100%;
       height: 118px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 14px;
     }
     .gauge-svg {
       position: absolute;
-      top: 0;
+      top: 4px;
       left: 50%;
       transform: translateX(-50%);
-      width: 200px;
-      height: 110px;
-      overflow: visible;
-    }
-    .gauge-tick-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 9px;
-      fill: var(--text-low);
-      font-weight: 600;
+      width: 210px;
+      height: 115px;
     }
     .gauge-center {
       position: absolute;
-      top: 44px;
+      top: 48px;
       left: 50%;
       transform: translateX(-50%);
-      width: 130px;
       text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      width: 140px;
     }
     .percent-box {
       display: flex;
       align-items: baseline;
+      justify-content: center;
       line-height: 1;
-      font-family: 'JetBrains Mono', monospace;
     }
     .percent-number {
-      font-size: 34px;
-      font-weight: 700;
-      color: var(--text-hi);
+      font-size: 36px;
+      font-weight: 800;
       letter-spacing: -1.5px;
     }
     .percent-symbol {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--text-mid);
-      margin-left: 2px;
+      font-size: 18px;
+      font-weight: 700;
+      margin-left: 1px;
     }
     .gauge-sub {
-      font-size: 9px;
-      font-weight: 600;
-      color: var(--text-low);
       margin-top: 4px;
-      letter-spacing: 0.8px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--muted);
       text-transform: uppercase;
     }
 
-    /* Stats — soft glass strips, not heavy cards */
+    /* IN / OUT */
     .inout-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
-      margin-bottom: 10px;
+      margin-bottom: 4px;
     }
     .stat-card {
-      background: rgba(255,242,223,0.55);
-      border: 2px solid var(--line);
-      border-radius: 14px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
       padding: 10px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
     }
     .stat-header {
-      display: flex;
-      align-items: center;
-      gap: 6px;
       font-size: 9px;
       font-weight: 700;
-      letter-spacing: 1px;
-      color: var(--text-mid);
+      letter-spacing: 0.6px;
+      color: var(--muted);
       text-transform: uppercase;
+      margin-bottom: 4px;
     }
-    .dot-in, .dot-out {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      border: 2px solid var(--text-hi);
-    }
-    .dot-in { background: var(--amber); }
-    .dot-out { background: var(--coral); }
     .stat-value {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text-hi);
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+    .stat-of {
+      margin-top: 2px;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
     }
 
+    /* Metrics */
     .metrics-box {
-      border-top: 2px dashed var(--line);
-      border-bottom: 2px dashed var(--line);
-      padding: 2px 2px;
-      margin-bottom: 12px;
+      margin: 4px 0 12px;
     }
     .metric-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 10px 2px;
-      font-size: 12px;
-      color: var(--text-mid);
-    }
-    .metric-row:not(:last-child) {
-      border-bottom: 1px solid var(--line);
+      padding: 11px 2px;
+      border-bottom: 1px solid var(--border-soft);
     }
     .metric-label {
       display: flex;
       align-items: center;
       gap: 8px;
-      font-weight: 600;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+      color: var(--muted);
+      text-transform: uppercase;
     }
     .metric-label svg {
       width: 14px;
       height: 14px;
-      stroke: var(--sage);
+      stroke: var(--text);
       fill: none;
+      stroke-width: 1.8;
     }
     .metric-val {
-      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
       font-weight: 700;
-      font-size: 12.5px;
-      color: var(--text-hi);
+      color: var(--text);
     }
-    .metric-val.pace { color: var(--coral); }
 
-    /* Pill actions — match website .btn */
+    /* Actions — 3 equal */
     .action-row {
       display: grid;
-      grid-template-columns: 1fr 1fr 40px;
-      gap: 7px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
       margin-bottom: 14px;
     }
     .action-btn {
-      background: transparent;
-      border: 2px solid var(--text-hi);
-      border-radius: 999px;
-      padding: 9px 6px;
-      color: var(--text-hi);
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 4px;
       font-family: inherit;
-      font-size: 10px;
+      font-size: 8.5px;
       font-weight: 700;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      color: var(--text);
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      gap: 4px;
-      box-shadow: 3px 3px 0 var(--sage);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      gap: 5px;
+      transition: background 0.12s ease;
     }
+    .action-btn:hover { background: var(--bg); }
     .action-btn svg {
-      width: 14px;
-      height: 14px;
-      stroke: var(--sage);
+      width: 15px;
+      height: 15px;
+      stroke: var(--text);
       fill: none;
+      stroke-width: 1.8;
     }
-    .action-btn:hover {
-      transform: translate(-1px, -1px);
-      box-shadow: 4px 4px 0 var(--sage);
-    }
-    .action-btn:hover svg { stroke: var(--amber); }
-    .btn-reset { padding: 0; }
 
+    /* Move context */
     .section-title {
-      font-family: 'JetBrains Mono', monospace;
       font-size: 9px;
       font-weight: 700;
-      letter-spacing: 1.4px;
-      color: var(--text-low);
+      letter-spacing: 0.8px;
+      color: var(--muted);
       text-transform: uppercase;
       margin-bottom: 8px;
     }
-
     .move-grid {
-      display: flex;
-      flex-wrap: wrap;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 6px;
-      margin-bottom: 14px;
     }
     .model-btn {
-      background: rgba(255,255,255,0.65);
-      border: 2px solid var(--sage);
-      border-radius: 999px;
-      padding: 7px 11px;
-      color: var(--text-hi);
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 9px 10px;
       font-family: inherit;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-    .model-btn:hover {
-      transform: translate(-1px, -1px);
-      box-shadow: 3px 3px 0 var(--sage);
-    }
-    .model-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      flex: none;
-      border: 1.5px solid var(--text-hi);
-    }
-    .dot-claude { background: #f97316; }
-    .dot-gemini { background: #3b82f6; }
-    .dot-grok { background: #ffffff; }
-    .dot-chatgpt { background: #22c55e; }
-
-    /* Primary CTA — website .btn-primary */
-    .optimize-btn {
-      width: 100%;
-      height: 44px;
-      background: var(--sage);
-      border: 2.5px solid var(--text-hi);
-      border-radius: 999px;
-      color: var(--cream);
-      font-family: inherit;
-      font-size: 13px;
-      font-weight: 700;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
       cursor: pointer;
       display: flex;
       align-items: center;
-      justify-content: center;
       gap: 8px;
-      box-shadow: 4px 4px 0 var(--text-hi);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: background 0.12s ease;
     }
-    .optimize-btn svg {
+    .model-btn:hover { background: var(--bg); }
+    .model-btn svg {
       width: 14px;
       height: 14px;
-      fill: var(--cream);
-    }
-    .optimize-btn:hover {
-      transform: translate(-2px, -2px);
-      box-shadow: 6px 6px 0 var(--text-hi);
-    }
-    .optimize-btn:active {
-      transform: translate(1px, 1px);
-      box-shadow: 2px 2px 0 var(--text-hi);
+      flex: none;
     }
 
     .toast {
       margin-top: 10px;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(255,242,223,0.9);
-      border: 2px solid var(--sage);
-      color: var(--text-mid);
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 600;
       text-align: center;
       display: none;
-      box-shadow: 3px 3px 0 var(--sage);
     }
 
     .empty {
       padding: 28px 12px;
       text-align: center;
-      color: var(--text-mid);
       font-size: 12px;
+      font-weight: 500;
+      line-height: 1.5;
+      color: var(--muted);
+      border: 1.5px dashed var(--border-soft);
+      border-radius: 12px;
+    }
+
+    .site-link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border-soft);
+      font-size: 11px;
       font-weight: 600;
-      line-height: 1.55;
-      border: 2px dashed var(--sage);
-      border-radius: 16px;
-      background: rgba(255,255,255,0.4);
+      color: var(--sage);
+      text-decoration: none;
+    }
+    .site-link:hover { color: var(--text); }
+    .site-link svg {
+      width: 12px;
+      height: 12px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
     }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <div class="panel">
-      <div id="empty-state" class="empty" hidden>
-        Open a supported AI chat — ChatGPT, Claude, Gemini, GLM, Kimi, or Grok — to see live token stats.
-      </div>
-
-      <div id="content-state">
-        <div class="header">
-          <div class="brand">
-            <span id="dot" class="dot"></span>
-            <span class="title">Gonona</span>
-            <span id="site" class="site-pill">ChatGPT</span>
-          </div>
-          <span id="mode" class="mode-label">ESTIMATED</span>
-        </div>
-
-        <p class="block-label">Token window</p>
-        <div class="window-text">
-          of a <b id="limit">128,000</b> token window
-        </div>
-
-        <div class="gauge-wrapper">
-          <svg class="gauge-svg" viewBox="0 0 200 110">
-            <path d="M 20,90 A 70,70 0 0,1 180,90" fill="none" stroke="#e0d8c8" stroke-width="10" stroke-linecap="round"/>
-            <path id="gauge-arc" d="M 20,90 A 70,70 0 0,1 180,90" fill="none" stroke="#607456" stroke-width="10" stroke-linecap="round" stroke-dasharray="219.911" stroke-dashoffset="217.7"/>
-            <text x="20" y="108" class="gauge-tick-label" text-anchor="middle">0</text>
-            <text x="100" y="12" class="gauge-tick-label" text-anchor="middle">50</text>
-            <text x="180" y="108" class="gauge-tick-label" text-anchor="middle">100</text>
-          </svg>
-          <div class="gauge-center">
-            <div class="percent-box">
-              <span id="percent-big" class="percent-number">1</span>
-              <span class="percent-symbol">%</span>
-            </div>
-            <div class="gauge-sub">token window used</div>
-          </div>
-        </div>
-
-        <div class="inout-row">
-          <div class="stat-card">
-            <div class="stat-header"><span class="dot-in"></span> IN</div>
-            <div id="in-tokens" class="stat-value">107</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-header"><span class="dot-out"></span> OUT</div>
-            <div id="out-tokens" class="stat-value">1,296</div>
-          </div>
-        </div>
-
-        <div class="metrics-box">
-          <div class="metric-row">
-            <div class="metric-label">
-              <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-              Messages left
-            </div>
-            <div id="msgs-left" class="metric-val">~360</div>
-          </div>
-          <div class="metric-row">
-            <div class="metric-label">
-              <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              Runway pace
-            </div>
-            <div id="runway" class="metric-val pace">45m</div>
-          </div>
-        </div>
-
-        <div class="action-row">
-          <button id="copy-btn" class="action-btn" title="Copy user prompts only">
-            <svg viewBox="0 0 24 24" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-            Copy prompts
-          </button>
-          <button id="copy-context-btn" class="action-btn" title="Copy full conversation context">
-            <svg viewBox="0 0 24 24" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
-            Copy context
-          </button>
-          <button id="reset-btn" class="action-btn btn-reset" title="Reset counters">
-            <svg viewBox="0 0 24 24" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-          </button>
-        </div>
-
-        <div class="section-title">Move context to</div>
-        <div class="move-grid">
-          <button id="move-claude" class="model-btn"><span class="model-dot dot-claude"></span> Claude</button>
-          <button id="move-gemini" class="model-btn"><span class="model-dot dot-gemini"></span> Gemini</button>
-          <button id="move-grok" class="model-btn"><span class="model-dot dot-grok"></span> Grok</button>
-          <button id="move-chatgpt" class="model-btn"><span class="model-dot dot-chatgpt"></span> ChatGPT</button>
-        </div>
-
-        <button id="optimize-btn" class="optimize-btn">
-          <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          Optimize prompt
-        </button>
-
-        <div id="toast" class="toast"></div>
-      </div>
+  <div class="panel">
+    <div id="empty-state" class="empty" hidden>
+      Open ChatGPT, Claude, Gemini, GLM, Kimi, or Grok to see live token stats.
     </div>
+
+    <div id="content-state">
+      <div class="header">
+        <span id="dot" class="dot"></span>
+        <span class="title">Gonona</span>
+        <span id="site" class="site-pill">ChatGPT</span>
+        <span id="mode" class="mode-label">ESTIMATED</span>
+      </div>
+
+      <div class="gauge-wrapper">
+        <svg class="gauge-svg" viewBox="0 0 200 110">
+          <path d="M 20,90 A 70,70 0 0,1 180,90" fill="none" stroke="#e4e2d8" stroke-width="12" stroke-linecap="round"/>
+          <path id="gauge-arc" d="M 20,90 A 70,70 0 0,1 180,90" fill="none" stroke="#6b7c5a" stroke-width="12" stroke-linecap="round" stroke-dasharray="219.911" stroke-dashoffset="127.5"/>
+        </svg>
+        <div class="gauge-center">
+          <div class="percent-box">
+            <span id="percent-big" class="percent-number">42</span>
+            <span class="percent-symbol">%</span>
+          </div>
+          <div class="gauge-sub">Token usage</div>
+        </div>
+      </div>
+
+      <div class="inout-row">
+        <div class="stat-card">
+          <div class="stat-header">In tokens</div>
+          <div id="in-tokens" class="stat-value">3,425</div>
+          <div class="stat-of">of <span id="limit-in">8,192</span></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-header">Out tokens</div>
+          <div id="out-tokens" class="stat-value">1,248</div>
+          <div class="stat-of">of <span id="limit-out">8,192</span></div>
+        </div>
+      </div>
+
+      <div class="metrics-box">
+        <div class="metric-row">
+          <div class="metric-label">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Messages
+          </div>
+          <div id="msgs-left" class="metric-val">18</div>
+        </div>
+        <div class="metric-row">
+          <div class="metric-label">
+            <svg viewBox="0 0 24 24"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+            Runway
+          </div>
+          <div id="runway" class="metric-val">3,519 tokens</div>
+        </div>
+      </div>
+
+      <div class="action-row">
+        <button id="copy-btn" class="action-btn" title="Copy user prompts only">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Copy prompts
+        </button>
+        <button id="copy-context-btn" class="action-btn" title="Copy full conversation context">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
+          Copy context
+        </button>
+        <button id="reset-btn" class="action-btn" title="Reset counters">
+          <svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+          Reset
+        </button>
+      </div>
+
+      <div class="section-title">Move context to</div>
+      <div class="move-grid">
+        <button id="move-claude" class="model-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3 4 19h4l1.5-3.5h5L16 19h4L12 3zm-1.2 9.5L12 8l1.2 4.5h-2.4z"/></svg>
+          Claude
+        </button>
+        <button id="move-gemini" class="model-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 9.5 9.5 2 12l7.5 2.5L12 22l2.5-7.5L22 12l-7.5-2.5L12 2z"/></svg>
+          Gemini
+        </button>
+        <button id="move-grok" class="model-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M7 7l10 10"/></svg>
+          Grok
+        </button>
+        <button id="move-chatgpt" class="model-btn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.282 9.821a5.985 5.985 0 0 0-.516-4.91 6.046 6.046 0 0 0-6.51-2.9A6.065 6.065 0 0 0 4.981 4.18a5.985 5.985 0 0 0-3.998 2.907 6.046 6.046 0 0 0 .743 7.097 5.98 5.98 0 0 0 .51 4.911 6.051 6.051 0 0 0 6.515 2.9A5.985 5.985 0 0 0 13.26 24a6.056 6.056 0 0 0 5.772-4.206 5.99 5.99 0 0 0 3.997-2.908 6.056 6.056 0 0 0-.747-7.065zM13.26 22.43a4.476 4.476 0 0 1-2.876-1.04l.141-.081 4.779-2.758a.795.795 0 0 0 .392-.681v-6.737l2.02 1.168a.071.071 0 0 1 .038.052v5.583a4.504 4.504 0 0 1-4.494 4.494zM3.6 18.304a4.47 4.47 0 0 1-.535-3.014l.142.085 4.783 2.759a.771.771 0 0 0 .78 0l5.843-3.369v2.332a.08.08 0 0 1-.033.062L9.74 19.95a4.5 4.5 0 0 1-6.14-1.646zM2.34 7.896a4.485 4.485 0 0 1 2.366-1.973V11.6a.766.766 0 0 0 .388.676l5.815 3.355-2.02 1.168a.076.076 0 0 1-.071 0l-4.83-2.786A4.504 4.504 0 0 1 2.34 7.872zm16.597 3.855-5.833-3.387L15.119 7.2a.076.076 0 0 1 .071 0l4.83 2.791a4.494 4.494 0 0 1-.676 8.105v-5.678a.79.79 0 0 0-.407-.667zm2.01-3.023-.141-.085-4.784-2.782a.776.776 0 0 0-.785 0L9.409 9.23V6.897a.066.066 0 0 1 .028-.061l4.83-2.787a4.5 4.5 0 0 1 6.68 4.66zM8.306 12.863l-2.02-1.163a.08.08 0 0 1-.038-.057V6.074a4.5 4.5 0 0 1 7.375-3.453l-.142.08L8.704 5.46a.795.795 0 0 0-.393.681zm1.097-2.365L12 8.704l2.597 1.498v2.999L12 14.696l-2.597-1.499z"/></svg>
+          ChatGPT
+        </button>
+      </div>
+
+      <div id="toast" class="toast"></div>
+    </div>
+
+    <a class="site-link" href="https://gonona.vercel.app/" target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+      gonona.vercel.app
+    </a>
   </div>
 
   <script src="popup.js"></script>

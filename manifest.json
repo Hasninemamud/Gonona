@@ -3,6 +3,7 @@
   "name": "Gonona — AI Token & Prompt Bridge",
   "version": "0.1.0",
   "description": "Live token counter, prompt optimizer, and 1-click context bridge for ChatGPT, Claude, Gemini, and Grok.",
+  "homepage_url": "https://gonona.vercel.app/",
   "permissions": [
     "storage"
   ],
