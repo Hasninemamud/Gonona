@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gonona — Setup Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #FFF2DF;
+      --bg-deep: #f0e4c8;
+      --panel: #ffffff;
+      --line: rgba(96,116,86,0.22);
+      --text-hi: #2d3a28;
+      --text-mid: #607456;
+      --text-low: #8fa888;
+      --sage: #607456;
+      --sage-light: #a8c49a;
+      --cream: #FFF2DF;
+      --amber: #e8a849;
+      --coral: #e07856;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--cream);
+      color: var(--text-hi);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Atmosphere */
+    .page-bg {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse 80% 50% at 15% -10%, rgba(168,196,154,0.45), transparent 55%),
+        radial-gradient(ellipse 60% 40% at 90% 20%, rgba(232,168,73,0.18), transparent 50%),
+        linear-gradient(165deg, #FFF2DF 0%, #f5e9d0 45%, #e8f0e2 100%);
+    }
+    .page-bg::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      opacity: 0.35;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%60607456' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    /* Motion */
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 4px 4px 0 var(--sage); }
+      50% { box-shadow: 4px 4px 0 var(--amber); }
+    }
+
+    .rise { animation: rise 0.7s ease both; }
+    .rise-d1 { animation-delay: 0.08s; }
+    .rise-d2 { animation-delay: 0.18s; }
+    .rise-d3 { animation-delay: 0.28s; }
+    .rise-d4 { animation-delay: 0.4s; }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 48px 32px 64px;
+    }
+
+    .hero-copy { max-width: 480px; }
+
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .brand .dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--sage);
+      border: 3px solid var(--text-hi);
+      animation: pulse-dot 2.4s ease-in-out infinite;
+    }
+    .brand-name {
+      font-size: clamp(2.5rem, 5vw, 3.5rem);
+      font-weight: 800;
+      letter-spacing: -1.5px;
+      line-height: 1;
+      color: var(--text-hi);
+    }
+
+    .hero h1 {
+      font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+      font-weight: 700;
+      letter-spacing: -0.4px;
+      line-height: 1.25;
+      margin-bottom: 14px;
+      color: var(--text-hi);
+    }
+
+    .hero-lede {
+      font-size: 1.05rem;
+      color: var(--text-mid);
+      font-weight: 500;
+      margin-bottom: 28px;
+      max-width: 38ch;
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 22px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 999px;
+      border: 2.5px solid var(--text-hi);
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .btn:hover { transform: translate(-2px, -2px); }
+    .btn-primary {
+      background: var(--sage);
+      color: var(--cream);
+      box-shadow: 4px 4px 0 var(--text-hi);
+    }
+    .btn-primary:hover { box-shadow: 6px 6px 0 var(--text-hi); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-hi);
+      box-shadow: 4px 4px 0 var(--sage);
+    }
+    .btn-ghost:hover { box-shadow: 6px 6px 0 var(--sage); }
+
+    /* Screenshot plane */
+    .hero-visual {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .hero-visual::before {
+      content: "";
+      position: absolute;
+      width: min(92%, 380px);
+      height: min(88%, 520px);
+      border-radius: 28px;
+      background: linear-gradient(145deg, var(--sage-light), var(--sage));
+      opacity: 0.35;
+      transform: rotate(4deg) translate(12px, 8px);
+      z-index: 0;
+    }
+    .screenshot-frame {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 340px);
+      animation: float 5.5s ease-in-out infinite;
+    }
+    .screenshot-frame img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 22px;
+      border: 3px solid var(--sage);
+      box-shadow: 10px 10px 0 var(--sage);
+      background: var(--panel);
+    }
+
+    /* Content sections */
+    .content {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    .block {
+      margin-bottom: 56px;
+    }
+    .block-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-low);
+      margin-bottom: 10px;
+    }
+    .block h2 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      margin-bottom: 10px;
+    }
+    .block > p {
+      color: var(--text-mid);
+      font-size: 15px;
+      margin-bottom: 24px;
+      max-width: 52ch;
+    }
+
+    .steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      border-left: 3px solid var(--sage);
+      margin-left: 15px;
+      padding-left: 24px;
+    }
+    .step {
+      position: relative;
+      padding: 0 0 28px;
+    }
+    .step:last-child { padding-bottom: 0; }
+    .step::before {
+      content: attr(data-n);
+      position: absolute;
+      left: -41px;
+      top: 0;
+      width: 30px;
+      height: 30px;
+      background: var(--amber);
+      border: 2px solid var(--text-hi);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 700;
+      box-shadow: 2px 2px 0 var(--text-hi);
+      line-height: 30px;
+      text-align: center;
+    }
+    .step h3 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    .step p {
+      font-size: 14px;
+      color: var(--text-mid);
+    }
+    .step code {
+      background: rgba(96,116,86,0.1);
+      border: 1.5px solid var(--line);
+      border-radius: 6px;
+      padding: 1px 7px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 28px;
+    }
+    .feature {
+      display: grid;
+      gap: 4px;
+    }
+    .feature strong {
+      font-size: 14px;
+      font-weight: 700;
+    }
+    .feature span {
+      font-size: 13px;
+      color: var(--text-mid);
+    }
+
+    .sites {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .site {
+      font-size: 13px;
+      font-weight: 700;
+      padding: 8px 14px;
+      border: 2px solid var(--sage);
+      border-radius: 999px;
+      background: rgba(255,255,255,0.55);
+      color: var(--text-hi);
+    }
+    .site small {
+      display: block;
+      font-weight: 500;
+      font-size: 11px;
+      color: var(--text-low);
+      margin-top: 2px;
+    }
+
+    .note {
+      font-size: 14px;
+      color: var(--text-mid);
+      padding-top: 8px;
+      border-top: 2px dashed var(--line);
+    }
+    .note strong { color: var(--text-hi); }
+
+    .footer-cta {
+      text-align: center;
+      padding: 48px 24px 24px;
+      border-top: 3px solid var(--sage);
+    }
+    .footer-cta .brand-name {
+      font-size: 2rem;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .footer-cta p {
+      color: var(--text-mid);
+      margin-bottom: 20px;
+      font-size: 15px;
+    }
+
+    @media (max-width: 860px) {
+      .hero {
+        grid-template-columns: 1fr;
+        min-height: auto;
+        padding: 40px 20px 48px;
+        gap: 36px;
+        text-align: center;
+      }
+      .hero-copy {
+        max-width: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .hero-lede { max-width: 36ch; }
+      .cta-row { justify-content: center; }
+      .hero-visual::before { display: none; }
+      .screenshot-frame { width: min(100%, 280px); }
+      .features { grid-template-columns: 1fr; }
+      .sites { justify-content: center; }
+      .steps { margin-left: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-bg" aria-hidden="true"></div>
+
+  <header class="hero">
+    <div class="hero-copy">
+      <div class="brand rise">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="brand-name">Gonona</span>
+      </div>
+      <h1 class="rise rise-d1">Track tokens. Bridge context across AI chats.</h1>
+      <p class="hero-lede rise rise-d2">
+        Live usage gauge, prompt tools, and one-click context transfer for ChatGPT, Claude, Gemini, and more.
+      </p>
+      <div class="cta-row rise rise-d3">
+        <a class="btn btn-primary" href="#install">Install now</a>
+        <a class="btn btn-ghost" href="#use">See how it works</a>
+      </div>
+    </div>
+
+    <div class="hero-visual rise rise-d4">
+      <figure class="screenshot-frame">
+        <img
+          src="assets/gonona-popup-screenshot.png"
+          alt="Gonona extension popup showing a 42% token gauge, IN/OUT stats, copy actions, and move-context buttons"
+          width="680"
+          height="900"
+        />
+      </figure>
+    </div>
+  </header>
+
+  <main class="content">
+    <section class="block" id="install">
+      <p class="block-label">01 — Install</p>
+      <h2>Load Gonona in Chrome or Edge</h2>
+      <p>Developer mode only for now — no store listing required.</p>
+      <div class="steps">
+        <div class="step" data-n="1">
+          <h3>Open extensions</h3>
+          <p>Go to <code>chrome://extensions</code> (or <code>edge://extensions</code>).</p>
+        </div>
+        <div class="step" data-n="2">
+          <h3>Enable Developer mode</h3>
+          <p>Toggle <strong>Developer mode</strong> on in the top-right.</p>
+        </div>
+        <div class="step" data-n="3">
+          <h3>Load unpacked</h3>
+          <p>Click <strong>Load unpacked</strong> and select this project folder.</p>
+        </div>
+        <div class="step" data-n="4">
+          <h3>Pin Gonona</h3>
+          <p>Open the puzzle menu in the toolbar and pin Gonona for one-click access.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" id="use">
+      <p class="block-label">02 — Use</p>
+      <h2>Open a chat, then open the popup</h2>
+      <p>Gonona runs on the page and shows live stats in the toolbar panel.</p>
+      <div class="steps">
+        <div class="step" data-n="1">
+          <h3>Visit a supported AI site</h3>
+          <p>Start or continue a conversation on ChatGPT, Claude, Gemini, Grok, Kimi, or GLM.</p>
+        </div>
+        <div class="step" data-n="2">
+          <h3>Click the Gonona icon</h3>
+          <p>See window %, IN/OUT tokens, messages left, and runway pace.</p>
+        </div>
+        <div class="step" data-n="3">
+          <h3>Copy or move context</h3>
+          <p><strong>Copy prompts</strong> / <strong>Copy context</strong>, or send the transcript to another model.</p>
+        </div>
+        <div class="step" data-n="4">
+          <h3>Optimize before you send</h3>
+          <p>Use <strong>Optimize prompt</strong> to strip filler from the composer text.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <p class="block-label">03 — Features</p>
+      <h2>What the popup gives you</h2>
+      <div class="features">
+        <div class="feature">
+          <strong>Token window gauge</strong>
+          <span>Percent of the context limit used so far</span>
+        </div>
+        <div class="feature">
+          <strong>IN / OUT split</strong>
+          <span>User vs assistant tokens from the chat</span>
+        </div>
+        <div class="feature">
+          <strong>Messages left</strong>
+          <span>Rough runway based on average message size</span>
+        </div>
+        <div class="feature">
+          <strong>Context bridge</strong>
+          <span>Move a formatted transcript to another AI</span>
+        </div>
+        <div class="feature">
+          <strong>Prompt optimizer</strong>
+          <span>Local rules only — no API key required</span>
+        </div>
+        <div class="feature">
+          <strong>Exact vs estimated</strong>
+          <span>Badge flips when provider usage is sniffed</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="block">
+      <p class="block-label">04 — Sites</p>
+      <h2>Supported hosts</h2>
+      <div class="sites">
+        <span class="site">ChatGPT<small>chatgpt.com</small></span>
+        <span class="site">Claude<small>claude.ai</small></span>
+        <span class="site">Gemini<small>gemini.google.com</small></span>
+        <span class="site">Grok<small>grok.com</small></span>
+        <span class="site">Kimi<small>kimi.moonshot.cn</small></span>
+        <span class="site">GLM<small>chatglm.cn</small></span>
+      </div>
+    </section>
+
+    <section class="block">
+      <p class="block-label">05 — Accuracy</p>
+      <h2>How tokens are counted</h2>
+      <p class="note">
+        <strong>ChatGPT</strong> uses the vendored GPT tokenizer when available.
+        <strong>Claude</strong> can show exact totals from SSE usage.
+        Other sites use character heuristics — the popup shows <strong>ESTIMATED</strong> or <strong>EXACT</strong> accordingly.
+      </p>
+    </section>
+  </main>
+
+  <footer class="footer-cta">
+    <span class="brand-name">Gonona</span>
+    <p>Never lose the thread mid-conversation.</p>
+    <a class="btn btn-primary" href="#install">Back to install</a>
+  </footer>
+</body>
+</html>
