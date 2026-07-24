@@ -99,16 +99,29 @@
     }
   }
 
-  // Let the popup trigger the same actions the panel buttons do
+  // Copy actions return text to the popup — clipboard needs the popup's user gesture.
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message?.type !== "tally-action") return;
-    if (message.action === "copy") copyConversation();
-    if (message.action === "copy-context") {
-      const ok = copyContext();
-      sendResponse({ ok });
+
+    if (message.action === "copy") {
+      sendResponse({ ok: true, text: getUserPromptsText() });
+      return;
     }
-    if (message.action === "move-to") moveToSite(message.targetSite);
-    if (message.action === "optimize") optimizeCurrentPrompt();
+    if (message.action === "copy-context") {
+      const text = getFormattedContext();
+      sendResponse({ ok: !!text, text });
+      return;
+    }
+    if (message.action === "move-to") {
+      moveToSite(message.targetSite);
+      sendResponse({ ok: true });
+      return;
+    }
+    if (message.action === "optimize") {
+      optimizeCurrentPrompt();
+      sendResponse({ ok: true });
+      return;
+    }
     if (message.action === "reset") {
       promptTokens = 0;
       completionTokens = 0;
@@ -116,6 +129,7 @@
       seen = new WeakSet();
       messageCount = 0;
       updateStats();
+      sendResponse({ ok: true });
     }
   });
 
@@ -124,8 +138,7 @@
     updateStats();
   }, 30000);
 
-  // --- copy user input prompts to clipboard ---
-  function copyConversation() {
+  function getUserPromptsText() {
     const nodes = document.querySelectorAll(config.messageSelector);
     const lines = [];
     nodes.forEach((node) => {
@@ -144,10 +157,7 @@
       }
     }
 
-    const transcript = lines.join("\n\n");
-    if (transcript) {
-      navigator.clipboard.writeText(transcript).catch(() => {});
-    }
+    return lines.join("\n\n");
   }
 
   // --- extract full conversation context ---
@@ -172,17 +182,6 @@
     if (turns.length === 0) return "";
 
     return `Here is the context from my previous conversation:\n\n---\n${turns.join("\n\n")}\n---\n\nPlease continue based on the conversation context above.`;
-  }
-
-  function copyContext() {
-    const context = getFormattedContext();
-    if (context) {
-      navigator.clipboard.writeText(context).catch(() => {});
-    } else {
-      // Return error signal so popup can show user feedback
-      return false;
-    }
-    return true;
   }
 
   function moveToSite(targetSite) {
