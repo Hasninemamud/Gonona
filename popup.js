@@ -18,16 +18,15 @@ function render(stats) {
   const siteName = stats.site ? stats.site.charAt(0).toUpperCase() + stats.site.slice(1) : "Chat";
   setText("site", siteName);
   setText("percent-big", String(stats.percent ?? 0));
-  setText("in-tokens", stats.promptTokens ? stats.promptTokens.toLocaleString() : "0");
-  setText("out-tokens", stats.completionTokens ? stats.completionTokens.toLocaleString() : "0");
-  setText(
-    "msgs-left",
-    typeof stats.messageCount === "number" ? stats.messageCount.toLocaleString() : "—"
-  );
-  setText(
-    "runway",
-    typeof stats.remaining === "number" ? `${stats.remaining.toLocaleString()} tokens` : "—"
-  );
+  setText("in-tokens", Number.isFinite(stats.promptTokens) ? stats.promptTokens.toLocaleString() : "0");
+  setText("out-tokens", Number.isFinite(stats.completionTokens) ? stats.completionTokens.toLocaleString() : "0");
+  setText("msgs-left", stats.msgsLeftText || "—");
+  setText("runway", stats.runwayText || "—");
+  const modelEl = document.getElementById("model-label");
+  if (modelEl) {
+    modelEl.textContent = stats.modelLabel ? stats.modelLabel : "";
+    modelEl.hidden = !stats.modelLabel;
+  }
 
   const arcEl = document.getElementById("gauge-arc");
   if (arcEl) {
@@ -204,5 +203,44 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  const KEY_FIELDS = [
+    ["key-openai", "openai"],
+    ["key-anthropic", "anthropic"],
+    ["key-gemini", "gemini"],
+    ["key-xai", "xai"],
+  ];
+
+  function loadApiKeys() {
+    chrome.storage.local.get("gononaApiKeys", (res) => {
+      if (chrome.runtime.lastError) return;
+      const keys = res?.gononaApiKeys || {};
+      KEY_FIELDS.forEach(([inputId, key]) => {
+        const el = document.getElementById(inputId);
+        if (el && keys[key]) el.value = keys[key];
+      });
+    });
+  }
+
+  const keysSave = document.getElementById("keys-save");
+  if (keysSave) {
+    keysSave.addEventListener("click", () => {
+      const gononaApiKeys = {};
+      KEY_FIELDS.forEach(([inputId, key]) => {
+        const el = document.getElementById(inputId);
+        const val = (el?.value || "").trim();
+        if (val) gononaApiKeys[key] = val;
+      });
+      chrome.storage.local.set({ gononaApiKeys }, () => {
+        showToast("API keys saved");
+      });
+    });
+  }
+
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area !== "local" || !changes.tallyLatest) return;
+    render(changes.tallyLatest.newValue);
+  });
+
+  loadApiKeys();
   loadStats();
 });

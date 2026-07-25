@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Gonona — AI Token & Prompt Bridge",
   "version": "0.1.0",
-  "description": "Live token counter, prompt optimizer, and 1-click context bridge for ChatGPT, Claude, Gemini, and Grok.",
+  "description": "Live under-composer token meter, model-aware msgs-left, and 1-click context bridge for ChatGPT, Claude, Gemini, and Grok.",
   "homepage_url": "https://gonona.vercel.app/",
   "permissions": [
     "storage"
@@ -14,7 +14,11 @@
     "https://gemini.google.com/*",
     "https://chatglm.cn/*",
     "https://kimi.moonshot.cn/*",
-    "https://grok.com/*"
+    "https://grok.com/*",
+    "https://api.openai.com/*",
+    "https://api.anthropic.com/*",
+    "https://generativelanguage.googleapis.com/*",
+    "https://api.x.ai/*"
   ],
   "icons": {
     "16": "icons/icon16.png",
@@ -36,11 +40,29 @@
         "https://kimi.moonshot.cn/*",
         "https://grok.com/*"
       ],
+      "js": ["inject.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    },
+    {
+      "matches": [
+        "https://chatgpt.com/*",
+        "https://chat.openai.com/*",
+        "https://claude.ai/*",
+        "https://gemini.google.com/*",
+        "https://chatglm.cn/*",
+        "https://kimi.moonshot.cn/*",
+        "https://grok.com/*"
+      ],
       "js": [
         "site-config.js",
         "vendor/gpt-tokenizer.bundle.js",
         "tokenizer.js",
+        "claude-tokens.js",
+        "chatgpt-tokens.js",
+        "token-api.js",
         "optimizer.js",
+        "meter.js",
         "content.js"
       ],
       "run_at": "document_idle"

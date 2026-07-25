@@ -376,7 +376,7 @@
       </div>
       <h1 class="rise rise-d1">Track tokens. Bridge context across AI chats.</h1>
       <p class="hero-lede rise rise-d2">
-        Live usage gauge, prompt tools, and one-click context transfer for ChatGPT, Claude, Gemini, and more.
+        Inline meter under the composer, model-aware messages-left, and one-click context transfer for ChatGPT, Claude, Gemini, and more.
       </p>
       <div class="cta-row rise rise-d3">
         <a class="btn btn-primary" href="#install">Install now</a>
@@ -423,51 +423,51 @@
 
     <section class="block" id="use">
       <p class="block-label">02 — Use</p>
-      <h2>Open a chat, then open the popup</h2>
-      <p>Gonona runs on the page and shows live stats in the toolbar panel.</p>
+      <h2>Open a chat — the meter appears under the input</h2>
+      <p>Gonona runs on the page with a quiet bar under the composer, plus a full toolbar popup.</p>
       <div class="steps">
         <div class="step" data-n="1">
           <h3>Visit a supported AI site</h3>
           <p>Start or continue a conversation on ChatGPT, Claude, Gemini, Grok, Kimi, or GLM.</p>
         </div>
         <div class="step" data-n="2">
-          <h3>Click the Gonona icon</h3>
-          <p>See window %, IN/OUT tokens, messages left, and runway pace.</p>
+          <h3>Watch the inline meter</h3>
+          <p>See %, ≈ msgs left (model-aware), and runway under the chat input.</p>
         </div>
         <div class="step" data-n="3">
-          <h3>Copy or move context</h3>
-          <p><strong>Copy prompts</strong> / <strong>Copy context</strong>, or send the transcript to another model.</p>
+          <h3>Open the Gonona popup</h3>
+          <p>IN/OUT tokens, forecast strings, and exact vs estimated mode.</p>
         </div>
         <div class="step" data-n="4">
-          <h3>Optimize before you send</h3>
-          <p>Use <strong>Optimize prompt</strong> to strip filler from the composer text.</p>
+          <h3>Copy or move context</h3>
+          <p><strong>Copy prompts</strong> / <strong>Copy context</strong>, or send the transcript to another model.</p>
         </div>
       </div>
     </section>
 
     <section class="block">
       <p class="block-label">03 — Features</p>
-      <h2>What the popup gives you</h2>
+      <h2>What Gonona gives you</h2>
       <div class="features">
         <div class="feature">
+          <strong>Inline meter</strong>
+          <span>Quiet bar under the composer — % and msgs left</span>
+        </div>
+        <div class="feature">
           <strong>Token window gauge</strong>
-          <span>Percent of the context limit used so far</span>
+          <span>Percent of the context limit in the popup</span>
+        </div>
+        <div class="feature">
+          <strong>Model-aware msgs left</strong>
+          <span>Priors by model, blended with your chat average</span>
         </div>
         <div class="feature">
           <strong>IN / OUT split</strong>
           <span>User vs assistant tokens from the chat</span>
         </div>
         <div class="feature">
-          <strong>Messages left</strong>
-          <span>Rough runway based on average message size</span>
-        </div>
-        <div class="feature">
           <strong>Context bridge</strong>
           <span>Move a formatted transcript to another AI</span>
-        </div>
-        <div class="feature">
-          <strong>Prompt optimizer</strong>
-          <span>Local rules only — no API key required</span>
         </div>
         <div class="feature">
           <strong>Exact vs estimated</strong>
@@ -493,9 +493,12 @@
       <p class="block-label">05 — Accuracy</p>
       <h2>How tokens are counted</h2>
       <p class="note">
-        <strong>ChatGPT</strong> uses the vendored GPT tokenizer when available.
-        <strong>Claude</strong> can show exact totals from SSE usage.
-        Other sites use character heuristics — the popup shows <strong>ESTIMATED</strong> or <strong>EXACT</strong> accordingly.
+        Fetch intercept (MAIN world) reads each site’s own streams when available:
+        <strong>Claude</strong> — <code>message_limit</code> session % + o200k tree;
+        <strong>ChatGPT</strong> — <code>usage</code> or conversation mapping + o200k;
+        <strong>Gemini</strong> — <code>usageMetadata</code> when present;
+        <strong>Grok</strong> — OpenAI-shaped <code>usage</code> or o200k.
+        GLM/Kimi stay character heuristics. Popup shows <strong>EXACT</strong> vs <strong>ESTIMATED</strong>.
       </p>
     </section>
   </main>

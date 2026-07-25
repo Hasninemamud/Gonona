@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "gpt-tokenizer": "^3.4.0"
+  },
+  "scripts": {
+    "test:local": "node scripts/local-test.js"
   }
 }
