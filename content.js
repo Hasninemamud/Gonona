@@ -59,7 +59,31 @@
     const m = document.cookie.match(
       new RegExp(`(?:^|; )${name.replace(/([.$?*|{}()[\]\\/+^])/g, "\\$1")}=([^;]*)`)
     );
-    return m ? decodeURIComponent(m[1]) : null;
+    if (!m) return null;
+    let v = decodeURIComponent(m[1]);
+    // Claude lastActiveOrg is sometimes a quoted UUID
+    if (
+      (v.startsWith('"') && v.endsWith('"')) ||
+      (v.startsWith("'") && v.endsWith("'"))
+    ) {
+      v = v.slice(1, -1);
+    }
+    return v;
+  }
+
+  /**
+   * Normalize utilization to 0–100.
+   * SSE message_limit: typically 0–1 fractions → asFraction true.
+   * /usage API: typically 0–100 percents → asFraction false.
+   * Heuristic: if asFraction omitted and value ≤ 1, treat as fraction.
+   */
+  function normalizeUtilization(raw, { asFraction } = {}) {
+    const u = typeof raw === "string" ? parseFloat(raw) : raw;
+    if (!Number.isFinite(u) || u < 0) return null;
+    const fraction =
+      asFraction === true || (asFraction !== false && u <= 1);
+    const pct = fraction ? u * 100 : u;
+    return Math.min(100, Math.max(0, pct));
   }
 
   function applyMessageLimit(limit) {
@@ -68,17 +92,32 @@
     const five = limit.five_hour || limit;
     const seven = limit.seven_day || null;
 
-    if (typeof five.utilization === "number") {
-      sessionUtil = five.utilization;
-      sessionResetsAt = five.resets_at || five.resetsAt || sessionResetsAt;
-    } else if (typeof limit.utilization === "number") {
-      sessionUtil = limit.utilization;
-      sessionResetsAt = limit.resets_at || limit.resetsAt || sessionResetsAt;
+    const fiveUtil = normalizeUtilization(
+      five.utilization ?? five.percent ?? five.utilization_percent,
+      { asFraction: five.utilization != null && five.utilization <= 1 ? true : undefined }
+    );
+    if (fiveUtil !== null) {
+      sessionUtil = fiveUtil;
+      sessionResetsAt =
+        five.resets_at || five.resetsAt || five.reset_time || sessionResetsAt;
+    } else {
+      const flat = normalizeUtilization(limit.utilization ?? limit.percent);
+      if (flat !== null) {
+        sessionUtil = flat;
+        sessionResetsAt =
+          limit.resets_at || limit.resetsAt || sessionResetsAt;
+      }
     }
 
-    if (seven && typeof seven.utilization === "number") {
-      weeklyUtil = seven.utilization;
-      weeklyResetsAt = seven.resets_at || seven.resetsAt || weeklyResetsAt;
+    if (seven) {
+      const sevenUtil = normalizeUtilization(
+        seven.utilization ?? seven.percent
+      );
+      if (sevenUtil !== null) {
+        weeklyUtil = sevenUtil;
+        weeklyResetsAt =
+          seven.resets_at || seven.resetsAt || weeklyResetsAt;
+      }
     }
 
     updateStats();
@@ -86,14 +125,20 @@
 
   function applyUsagePayload(usage) {
     if (!usage || typeof usage !== "object") return;
-    // /usage returns rounded five_hour / seven_day
-    if (usage.five_hour && typeof usage.five_hour.utilization === "number") {
-      // Prefer live SSE unrounded if we already have it; otherwise use /usage
-      if (sessionUtil === null) sessionUtil = usage.five_hour.utilization;
+    // /usage returns rounded five_hour / seven_day as percents (0–100)
+    if (usage.five_hour) {
+      const u = normalizeUtilization(usage.five_hour.utilization, {
+        asFraction: false,
+      });
+      // Prefer live SSE if we already have it
+      if (sessionUtil === null && u !== null) sessionUtil = u;
       sessionResetsAt = usage.five_hour.resets_at || sessionResetsAt;
     }
-    if (usage.seven_day && typeof usage.seven_day.utilization === "number") {
-      if (weeklyUtil === null) weeklyUtil = usage.seven_day.utilization;
+    if (usage.seven_day) {
+      const u = normalizeUtilization(usage.seven_day.utilization, {
+        asFraction: false,
+      });
+      if (weeklyUtil === null && u !== null) weeklyUtil = u;
       weeklyResetsAt = usage.seven_day.resets_at || weeklyResetsAt;
     }
     updateStats();
@@ -140,12 +185,17 @@
   }
 
   function recountFromDom() {
-    const nodes = document.querySelectorAll(config.messageSelector);
+    const all = Array.from(document.querySelectorAll(config.messageSelector));
+    // Drop nested matches (parent+child both matching) to avoid double-count
+    const nodes = all.filter(
+      (n) => !all.some((o) => o !== n && n.contains(o))
+    );
     let prompt = 0;
     let completion = 0;
     let count = 0;
     nodes.forEach((node) => {
       const role = config.roleFromNode(node);
+      if (role === "system" || role === "tool") return;
       const text = (config.textFromNode(node) || "").trim();
       if (!text) return;
       const n = tallyCountTokens(text, config.tokenizerFamily);
@@ -258,9 +308,12 @@
     return turns;
   }
 
-  function scheduleApiRecount() {
+  let apiRecountQueued = false;
+
+  function scheduleApiRecount(force = false) {
     // Prefer inject / conversation tree over API-key recount when we already have data
     if (
+      !force &&
       exactTotal !== null &&
       (apiSource === "inject" ||
         apiSource === "claude-tree" ||
@@ -272,13 +325,13 @@
     if (!provider) return;
     clearTimeout(apiRecountTimer);
     apiRecountTimer = setTimeout(() => {
-      void recountViaApi();
+      void recountViaApi(force);
     }, 900);
   }
 
-  async function recountViaApi() {
+  async function recountViaApi(force = false) {
     if (apiInFlight) {
-      scheduleApiRecount();
+      apiRecountQueued = true;
       return;
     }
     const provider = tallySiteToApiProvider(config.id);
@@ -292,11 +345,22 @@
       const result = await tallyCountTokensViaApi(provider, turns, model.id);
       if (result && Number.isFinite(result.total)) {
         apiExactTotal = result.total;
-        apiSource = result.source;
+        if (
+          force ||
+          exactTotal === null ||
+          apiSource === "dom" ||
+          apiSource === result.source
+        ) {
+          apiSource = result.source;
+        }
         updateStats();
       }
     } finally {
       apiInFlight = false;
+      if (apiRecountQueued) {
+        apiRecountQueued = false;
+        scheduleApiRecount(force);
+      }
     }
   }
 
@@ -367,7 +431,7 @@
     const contextExact =
       exactTotal !== null || apiExactTotal !== null;
     const model = tallyDetectModel(config);
-    const limit = tallyGetContextLimit(config, model.id);
+    const limit = Math.max(1, tallyGetContextLimit(config, model.id) || 1);
     const remaining = Math.max(0, limit - contextTotal);
 
     const modelPrior = tallyAvgTokensForModel(model.id);
@@ -392,6 +456,7 @@
     const contextMsgsLeft = remaining / avgTokensPerMsg;
 
     if (isClaude && sessionUtil !== null && Number.isFinite(sessionUtil)) {
+      // sessionUtil is always stored as 0–100 after normalizeUtilization
       percent = Math.min(100, Math.max(0, Math.round(sessionUtil)));
       isExact = true;
       runwayText = formatCountdown(sessionResetsAt);
@@ -518,8 +583,7 @@
       weeklyUtil = null;
       weeklyResetsAt = null;
       messageCount = 0;
-      updateStats();
-      scheduleApiRecount();
+      scanMessages();
       if (isClaude) void refreshClaudeUsage();
       sendResponse({ ok: true });
     }
@@ -693,7 +757,10 @@
     scheduleScan();
     scheduleMeterMount();
   });
-  observer.observe(document.body, { childList: true, subtree: true });
+  const observeRoot = document.body || document.documentElement;
+  if (observeRoot) {
+    observer.observe(observeRoot, { childList: true, subtree: true });
+  }
 
   scheduleMeterMount();
   scanMessages();
@@ -708,7 +775,8 @@
   try {
     chrome.storage.onChanged.addListener((changes, area) => {
       if (area !== "local" || !changes.gononaApiKeys) return;
-      scheduleApiRecount();
+      // User saved keys — force API recount even if inject/tree is present
+      scheduleApiRecount(true);
     });
   } catch {
     /* ignore */

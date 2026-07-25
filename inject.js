@@ -33,6 +33,8 @@
     return "";
   }
 
+  let lastUsagePost = { total: 0, at: 0 };
+
   function reportUsage(inputTokens, outputTokens, totalOverride) {
     const input = Math.max(0, Math.floor(inputTokens || 0));
     const output = Math.max(0, Math.floor(outputTokens || 0));
@@ -41,6 +43,11 @@
         ? Math.floor(totalOverride)
         : input + output;
     if (total <= 0) return;
+    // Dedupe rapid duplicate parses from the same JSON/SSE envelope
+    const now = Date.now();
+    if (total <= lastUsagePost.total && now - lastUsagePost.at < 800) return;
+    if (total === lastUsagePost.total && now - lastUsagePost.at < 400) return;
+    lastUsagePost = { total, at: now };
     post("usage", {
       totalTokens: total,
       inputTokens: input,

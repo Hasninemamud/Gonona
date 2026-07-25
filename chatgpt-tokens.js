@@ -62,7 +62,9 @@
       "";
     const r = String(role).toLowerCase();
     if (r === "user" || r === "human") return "user";
-    if (r === "assistant" || r === "tool" || r === "system") return r === "system" ? "system" : "assistant";
+    if (r === "system") return "system";
+    if (r === "tool") return "tool";
+    if (r === "assistant") return "assistant";
     return "assistant";
   }
 
@@ -84,7 +86,7 @@
 
     for (const node of trunk) {
       const role = roleOf(node);
-      if (role === "system") continue;
+      if (role === "system" || role === "tool") continue;
       const text = textOf(node);
       if (!text.trim()) continue;
       const n =

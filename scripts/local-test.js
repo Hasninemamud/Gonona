@@ -334,6 +334,23 @@ ok("node gpt-tokenizer encode", () => {
   assert.ok(n >= 3 && n < 20, `unexpected token count ${n}`);
 });
 
+console.log("\n6) Utilization normalize heuristics");
+ok("fraction 0.31 → 31%", () => {
+  // Mirror content.js logic
+  function normalizeUtilization(raw, { asFraction } = {}) {
+    const u = typeof raw === "string" ? parseFloat(raw) : raw;
+    if (!Number.isFinite(u) || u < 0) return null;
+    const fraction =
+      asFraction === true || (asFraction !== false && u <= 1);
+    const pct = fraction ? u * 100 : u;
+    return Math.min(100, Math.max(0, pct));
+  }
+  assert.strictEqual(normalizeUtilization(0.31), 31);
+  assert.strictEqual(normalizeUtilization(31, { asFraction: false }), 31);
+  assert.strictEqual(normalizeUtilization(1, { asFraction: false }), 1);
+  assert.strictEqual(normalizeUtilization(0.99, { asFraction: true }), 99);
+});
+
 console.log(`\n${"─".repeat(40)}`);
 console.log(`Results: ${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

@@ -8,7 +8,13 @@ const TALLY_SITE_CONFIGS = [
     id: "chatgpt",
     hostMatch: (h) => h.includes("chatgpt.com") || h.includes("chat.openai.com"),
     messageSelector: '[data-message-author-role]',
-    roleFromNode: (node) => node.getAttribute("data-message-author-role"),
+    roleFromNode: (node) => {
+      const r = node.getAttribute("data-message-author-role");
+      if (r === "user" || r === "assistant" || r === "system" || r === "tool") {
+        return r;
+      }
+      return r || "assistant";
+    },
     textFromNode: (node) => node.innerText,
     tokenizerFamily: "gpt",
     inputSelector: '#prompt-textarea, div[contenteditable="true"]#prompt-textarea, div.ProseMirror[contenteditable="true"]',

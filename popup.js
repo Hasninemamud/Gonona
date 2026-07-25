@@ -190,9 +190,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const resetBtn = document.getElementById("reset-btn");
   if (resetBtn) {
-    resetBtn.addEventListener("click", () => {
-      sendAction("reset");
+    resetBtn.addEventListener("click", async () => {
+      await sendAction("reset");
       showToast("Counters reset");
+      setTimeout(loadStats, 250);
     });
   }
 
