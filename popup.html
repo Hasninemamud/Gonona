@@ -335,70 +335,6 @@
       fill: none;
       stroke-width: 2;
     }
-
-    .keys-box {
-      margin-top: 10px;
-      padding-top: 10px;
-      border-top: 2px dashed var(--line);
-    }
-    .keys-box summary {
-      cursor: pointer;
-      font-size: 9px;
-      font-weight: 700;
-      letter-spacing: 0.7px;
-      text-transform: uppercase;
-      color: var(--text-low);
-      list-style: none;
-    }
-    .keys-box summary::-webkit-details-marker { display: none; }
-    .keys-hint {
-      margin: 8px 0 6px;
-      font-size: 10px;
-      color: var(--text-mid);
-      line-height: 1.4;
-    }
-    .key-row {
-      display: grid;
-      gap: 3px;
-      margin-bottom: 7px;
-    }
-    .key-row label {
-      font-size: 9px;
-      font-weight: 700;
-      color: var(--text-mid);
-      text-transform: uppercase;
-      letter-spacing: 0.4px;
-    }
-    .key-row input {
-      width: 100%;
-      box-sizing: border-box;
-      border: 2px solid var(--sage);
-      border-radius: 8px;
-      padding: 6px 8px;
-      font-family: inherit;
-      font-size: 11px;
-      background: var(--cream);
-      color: var(--text-hi);
-    }
-    .key-row input::placeholder { color: var(--text-low); }
-    .keys-save {
-      width: 100%;
-      margin-top: 4px;
-      padding: 8px;
-      border: 2px solid var(--text-hi);
-      border-radius: 999px;
-      background: var(--sage);
-      color: var(--cream);
-      font-family: inherit;
-      font-size: 11px;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: 3px 3px 0 var(--text-hi);
-    }
-    .keys-save:hover {
-      transform: translate(-1px, -1px);
-      box-shadow: 4px 4px 0 var(--text-hi);
-    }
   </style>
 </head>
 <body>
@@ -495,30 +431,6 @@
 
       <div id="toast" class="toast"></div>
     </div>
-
-    <details class="keys-box">
-      <summary>API keys · exact token counts</summary>
-      <p class="keys-hint">
-        Optional. Stored only in this browser. Used for ChatGPT, Claude, Gemini, and Grok count APIs. Without keys, Gonona falls back to local estimates.
-      </p>
-      <div class="key-row">
-        <label for="key-openai">OpenAI</label>
-        <input id="key-openai" type="password" autocomplete="off" placeholder="sk-…" />
-      </div>
-      <div class="key-row">
-        <label for="key-anthropic">Anthropic</label>
-        <input id="key-anthropic" type="password" autocomplete="off" placeholder="sk-ant-…" />
-      </div>
-      <div class="key-row">
-        <label for="key-gemini">Gemini</label>
-        <input id="key-gemini" type="password" autocomplete="off" placeholder="AIza…" />
-      </div>
-      <div class="key-row">
-        <label for="key-xai">xAI (Grok)</label>
-        <input id="key-xai" type="password" autocomplete="off" placeholder="xai-…" />
-      </div>
-      <button type="button" id="keys-save" class="keys-save">Save keys</button>
-    </details>
 
     <a class="site-link" href="https://gonona.vercel.app/" target="_blank" rel="noopener noreferrer">
       <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>

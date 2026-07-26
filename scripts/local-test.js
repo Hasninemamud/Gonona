@@ -60,7 +60,6 @@ const scripts = [
   "tokenizer.js",
   "meter.js",
   "site-config.js",
-  "token-api.js",
   "optimizer.js",
   "popup.js",
 ];
@@ -79,6 +78,8 @@ ok("manifest includes chatgpt-tokens.js + MAIN inject", () => {
   assert.ok(main.js.includes("inject.js"));
   assert.ok(isolated.js.includes("chatgpt-tokens.js"));
   assert.ok(isolated.js.includes("claude-tokens.js"));
+  assert.ok(!isolated.js.includes("token-api.js"));
+  assert.ok(!m.host_permissions.some((h) => /api\.(openai|anthropic|x)\.ai|generativelanguage/.test(h)));
 });
 
 ok("site-config gemini/grok use gpt tokenizer", () => {

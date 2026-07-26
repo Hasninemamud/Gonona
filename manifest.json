@@ -14,11 +14,7 @@
     "https://gemini.google.com/*",
     "https://chatglm.cn/*",
     "https://kimi.moonshot.cn/*",
-    "https://grok.com/*",
-    "https://api.openai.com/*",
-    "https://api.anthropic.com/*",
-    "https://generativelanguage.googleapis.com/*",
-    "https://api.x.ai/*"
+    "https://grok.com/*"
   ],
   "icons": {
     "16": "icons/icon16.png",
@@ -60,7 +56,6 @@
         "tokenizer.js",
         "claude-tokens.js",
         "chatgpt-tokens.js",
-        "token-api.js",
         "optimizer.js",
         "meter.js",
         "content.js"

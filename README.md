@@ -33,7 +33,7 @@ tally-extension/
 ### Load order (content scripts)
 
 1. **MAIN world** (`document_start`): `inject.js` — wraps `fetch` before the app caches it
-2. Isolated world (`document_idle`): `site-config.js` → `gpt-tokenizer` → `tokenizer.js` → `claude-tokens.js` → `chatgpt-tokens.js` → `token-api.js` → `optimizer.js` → `meter.js` → `content.js`
+2. Isolated world (`document_idle`): `site-config.js` → `gpt-tokenizer` → `tokenizer.js` → `claude-tokens.js` → `chatgpt-tokens.js` → `optimizer.js` → `meter.js` → `content.js`
 
 ### Fetch intercept (per site)
 
@@ -45,7 +45,7 @@ tally-extension/
 | Grok | OpenAI-shaped `usage` when present | Context %; else o200k DOM |
 | GLM / Kimi | — | DOM heuristic only |
 
-Priority: **inject usage → conversation tree → API key → DOM estimate**.
+Priority: **inject usage → conversation tree → DOM estimate**.
 
 ### Claude (same approach as Tally)
 
@@ -55,7 +55,6 @@ Claude.ai does **not** expose `input_tokens` in the chat SSE. Gonona mirrors Tal
 2. Intercept `/chat_conversations/…?tree=` → walk active branch → **o200k** token estimate (IN/OUT)
 3. RPC `GET /api/organizations/{org}/usage` with page cookies (bootstrap until SSE fires)
 
-Optional Anthropic API key (`count_tokens`) remains a separate exact path for pasted DOM turns.
 ## Runtime flow
 
 ```
@@ -104,15 +103,3 @@ Add an object to `TALLY_SITE_CONFIGS` (`hostMatch`, selectors, `composerSelector
 - Gemini web endpoints are obfuscated; we deep-scan for `usageMetadata` when Google emits it.
 - Grok may omit usage → o200k DOM estimate.
 - GLM / Kimi stay heuristic (no stable usage fields).
-## Token count APIs (exact)
-
-When you add keys under **API keys** in the popup, Gonona recounts the open chat via:
-
-| Site | Endpoint |
-|------|----------|
-| ChatGPT | `POST https://api.openai.com/v1/responses/input_tokens` |
-| Claude | `POST https://api.anthropic.com/v1/messages/count_tokens` |
-| Gemini | `POST …/models/{model}:countTokens` |
-| Grok | `POST https://api.x.ai/v1/tokenize-text` (sum of token ids) |
-
-Keys stay in `chrome.storage.local` only. Without a key for that provider, Gonona keeps using local estimates / inject usage hooks.

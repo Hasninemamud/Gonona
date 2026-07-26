@@ -20,15 +20,12 @@
   const meter = tallyCreateMeter();
 
   let exactTotal = null;
-  let apiExactTotal = null;
   let apiSource = null;
   let promptTokens = 0;
   let completionTokens = 0;
   let messageCount = 0;
   const sessionStart = Date.now();
   let lastStats = null;
-  let apiRecountTimer = null;
-  let apiInFlight = false;
   let treeFresh = false; // Claude/ChatGPT tree owns IN/OUT until DOM is richer
 
   // Claude session / conversation (Tally-style)
@@ -296,74 +293,6 @@
     }
   });
 
-  function collectTurns() {
-    const nodes = document.querySelectorAll(config.messageSelector);
-    const turns = [];
-    nodes.forEach((node) => {
-      const role = config.roleFromNode(node) === "user" ? "user" : "assistant";
-      const text = (config.textFromNode(node) || "").trim();
-      if (!text) return;
-      turns.push({ role, text });
-    });
-    return turns;
-  }
-
-  let apiRecountQueued = false;
-
-  function scheduleApiRecount(force = false) {
-    // Prefer inject / conversation tree over API-key recount when we already have data
-    if (
-      !force &&
-      exactTotal !== null &&
-      (apiSource === "inject" ||
-        apiSource === "claude-tree" ||
-        apiSource === "chatgpt-tree")
-    ) {
-      return;
-    }
-    const provider = tallySiteToApiProvider(config.id);
-    if (!provider) return;
-    clearTimeout(apiRecountTimer);
-    apiRecountTimer = setTimeout(() => {
-      void recountViaApi(force);
-    }, 900);
-  }
-
-  async function recountViaApi(force = false) {
-    if (apiInFlight) {
-      apiRecountQueued = true;
-      return;
-    }
-    const provider = tallySiteToApiProvider(config.id);
-    if (!provider) return;
-    const turns = collectTurns();
-    if (!turns.length) return;
-
-    apiInFlight = true;
-    try {
-      const model = tallyDetectModel(config);
-      const result = await tallyCountTokensViaApi(provider, turns, model.id);
-      if (result && Number.isFinite(result.total)) {
-        apiExactTotal = result.total;
-        if (
-          force ||
-          exactTotal === null ||
-          apiSource === "dom" ||
-          apiSource === result.source
-        ) {
-          apiSource = result.source;
-        }
-        updateStats();
-      }
-    } finally {
-      apiInFlight = false;
-      if (apiRecountQueued) {
-        apiRecountQueued = false;
-        scheduleApiRecount(force);
-      }
-    }
-  }
-
   function scanMessages() {
     const dom = recountFromDom();
 
@@ -376,7 +305,6 @@
     ) {
       scheduleMeterMount();
       updateStats();
-      scheduleApiRecount();
       return;
     }
 
@@ -385,15 +313,8 @@
       completionTokens = dom.completionTokens;
       messageCount = dom.messageCount;
       treeFresh = false;
-      // Local estimate fills exactTotal when no inject/API yet
-      if (exactTotal === null && apiExactTotal === null) {
+      if (exactTotal === null) {
         // leave exactTotal null → estimated mode uses local sum
-      } else if (
-        apiSource !== "inject" &&
-        apiSource !== "claude-tree" &&
-        apiSource !== "chatgpt-tree"
-      ) {
-        // keep api/inject totals
       } else if (apiSource === "inject" && exactTotal !== null) {
         // keep inject exact total for %; IN/OUT from DOM above
       } else if (
@@ -407,7 +328,6 @@
 
     scheduleMeterMount();
     updateStats();
-    scheduleApiRecount();
   }
 
   function formatElapsed(ms) {
@@ -427,9 +347,8 @@
 
   function updateStats() {
     const localTotal = promptTokens + completionTokens;
-    const contextTotal = Math.max(exactTotal ?? 0, apiExactTotal ?? 0, localTotal);
-    const contextExact =
-      exactTotal !== null || apiExactTotal !== null;
+    const contextTotal = Math.max(exactTotal ?? 0, localTotal);
+    const contextExact = exactTotal !== null;
     const model = tallyDetectModel(config);
     const limit = Math.max(1, tallyGetContextLimit(config, model.id) || 1);
     const remaining = Math.max(0, limit - contextTotal);
@@ -575,7 +494,6 @@
       promptTokens = 0;
       completionTokens = 0;
       exactTotal = null;
-      apiExactTotal = null;
       apiSource = null;
       treeFresh = false;
       sessionUtil = null;
@@ -770,15 +688,5 @@
     // Bootstrap session % from /usage (cookies) until live SSE arrives
     setTimeout(() => void refreshClaudeUsage(), 800);
     setInterval(() => void refreshClaudeUsage(), 5 * 60 * 1000);
-  }
-
-  try {
-    chrome.storage.onChanged.addListener((changes, area) => {
-      if (area !== "local" || !changes.gononaApiKeys) return;
-      // User saved keys — force API recount even if inject/tree is present
-      scheduleApiRecount(true);
-    });
-  } catch {
-    /* ignore */
   }
 })();

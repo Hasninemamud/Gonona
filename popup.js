@@ -204,44 +204,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  const KEY_FIELDS = [
-    ["key-openai", "openai"],
-    ["key-anthropic", "anthropic"],
-    ["key-gemini", "gemini"],
-    ["key-xai", "xai"],
-  ];
-
-  function loadApiKeys() {
-    chrome.storage.local.get("gononaApiKeys", (res) => {
-      if (chrome.runtime.lastError) return;
-      const keys = res?.gononaApiKeys || {};
-      KEY_FIELDS.forEach(([inputId, key]) => {
-        const el = document.getElementById(inputId);
-        if (el && keys[key]) el.value = keys[key];
-      });
-    });
-  }
-
-  const keysSave = document.getElementById("keys-save");
-  if (keysSave) {
-    keysSave.addEventListener("click", () => {
-      const gononaApiKeys = {};
-      KEY_FIELDS.forEach(([inputId, key]) => {
-        const el = document.getElementById(inputId);
-        const val = (el?.value || "").trim();
-        if (val) gononaApiKeys[key] = val;
-      });
-      chrome.storage.local.set({ gononaApiKeys }, () => {
-        showToast("API keys saved");
-      });
-    });
-  }
-
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area !== "local" || !changes.tallyLatest) return;
     render(changes.tallyLatest.newValue);
   });
 
-  loadApiKeys();
   loadStats();
 });
