@@ -53,7 +53,7 @@ Claude.ai does **not** expose `input_tokens` in the chat SSE. Gonona mirrors Tal
 
 1. Live-parse SSE `message_limit` → unrounded 5h / 7d **session utilization** (meter %)
 2. Intercept `/chat_conversations/…?tree=` → walk active branch → **o200k** token estimate (IN/OUT)
-3. RPC `GET /api/organizations/{org}/usage` with page cookies (bootstrap until SSE fires)
+3. RPC `GET /api/organizations/{org}/usage` with page cookies (bootstrap until SSE fires; utilization may be 0–1 fraction or 0–100 percent — same ≤1 heuristic as Tally)
 
 ## Runtime flow
 

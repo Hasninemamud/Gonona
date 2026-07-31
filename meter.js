@@ -150,7 +150,9 @@ function tallyCreateMeter() {
       const modeEl = shadow.querySelector("[data-mode]");
       if (pctEl) pctEl.textContent = `${pct}%`;
       if (fillEl) fillEl.style.width = `${pct}%`;
-      const msgs = stats.msgsLeftText || "—";
+      // msgsLeftText already includes ~ / — from tallyFormatMsgsLeft
+      let msgs = stats.msgsLeftText || "—";
+      if (/^-/.test(String(msgs).trim())) msgs = "—";
       // Keep model label short so the bar doesn't thrash layout
       let model = "";
       if (stats.modelLabel) {
@@ -161,7 +163,7 @@ function tallyCreateMeter() {
       }
       const runway =
         stats.runwayText && stats.runwayText !== "—" ? ` · ${stats.runwayText}` : "";
-      if (metaEl) metaEl.textContent = `≈ ${msgs} msgs${model}${runway}`;
+      if (metaEl) metaEl.textContent = `${msgs} msgs${model}${runway}`;
       if (modeEl) {
         const mode =
           stats.apiSource === "claude-session"

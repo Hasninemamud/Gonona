@@ -336,8 +336,8 @@ ok("node gpt-tokenizer encode", () => {
 });
 
 console.log("\n6) Utilization normalize heuristics");
-ok("fraction 0.31 → 31%", () => {
-  // Mirror content.js logic
+ok("fraction/percent shapes match Tally", () => {
+  // Mirror content.js logic — Claude /usage may return 0–1 OR 0–100
   function normalizeUtilization(raw, { asFraction } = {}) {
     const u = typeof raw === "string" ? parseFloat(raw) : raw;
     if (!Number.isFinite(u) || u < 0) return null;
@@ -346,10 +346,15 @@ ok("fraction 0.31 → 31%", () => {
     const pct = fraction ? u * 100 : u;
     return Math.min(100, Math.max(0, pct));
   }
+  // Regression: 0.19 must become 19%, not stay 0.19 → Math.round → 0%
+  assert.strictEqual(normalizeUtilization(0.19), 19);
+  assert.strictEqual(Math.round(normalizeUtilization(0.19)), 19);
   assert.strictEqual(normalizeUtilization(0.31), 31);
+  assert.strictEqual(normalizeUtilization(19), 19);
   assert.strictEqual(normalizeUtilization(31, { asFraction: false }), 31);
   assert.strictEqual(normalizeUtilization(1, { asFraction: false }), 1);
   assert.strictEqual(normalizeUtilization(0.99, { asFraction: true }), 99);
+  assert.strictEqual(normalizeUtilization(1), 100); // fraction 1.0 = 100%
 });
 
 console.log(`\n${"─".repeat(40)}`);

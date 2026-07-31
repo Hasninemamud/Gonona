@@ -70,9 +70,10 @@
 
   /**
    * Normalize utilization to 0–100.
-   * SSE message_limit: typically 0–1 fractions → asFraction true.
-   * /usage API: typically 0–100 percents → asFraction false.
-   * Heuristic: if asFraction omitted and value ≤ 1, treat as fraction.
+   * Claude /usage and SSE message_limit both may return either:
+   *   - 0–1 fractions (0.19 → 19%), or
+   *   - 0–100 percents (19 → 19%).
+   * Heuristic (same as Tally): value ≤ 1 → fraction; otherwise already percent.
    */
   function normalizeUtilization(raw, { asFraction } = {}) {
     const u = typeof raw === "string" ? parseFloat(raw) : raw;
@@ -90,8 +91,7 @@
     const seven = limit.seven_day || null;
 
     const fiveUtil = normalizeUtilization(
-      five.utilization ?? five.percent ?? five.utilization_percent,
-      { asFraction: five.utilization != null && five.utilization <= 1 ? true : undefined }
+      five.utilization ?? five.percent ?? five.utilization_percent
     );
     if (fiveUtil !== null) {
       sessionUtil = fiveUtil;
@@ -122,19 +122,15 @@
 
   function applyUsagePayload(usage) {
     if (!usage || typeof usage !== "object") return;
-    // /usage returns rounded five_hour / seven_day as percents (0–100)
+    // /usage: utilization is often a 0–1 fraction (same heuristic as SSE)
     if (usage.five_hour) {
-      const u = normalizeUtilization(usage.five_hour.utilization, {
-        asFraction: false,
-      });
+      const u = normalizeUtilization(usage.five_hour.utilization);
       // Prefer live SSE if we already have it
       if (sessionUtil === null && u !== null) sessionUtil = u;
       sessionResetsAt = usage.five_hour.resets_at || sessionResetsAt;
     }
     if (usage.seven_day) {
-      const u = normalizeUtilization(usage.seven_day.utilization, {
-        asFraction: false,
-      });
+      const u = normalizeUtilization(usage.seven_day.utilization);
       if (weeklyUtil === null && u !== null) weeklyUtil = u;
       weeklyResetsAt = usage.seven_day.resets_at || weeklyResetsAt;
     }
@@ -383,15 +379,17 @@
       const utilFrac = Math.min(99.9, Math.max(0, sessionUtil)) / 100;
       const remainingFrac = Math.max(0, 1 - utilFrac);
       let sessionMsgs = null;
-      if (utilFrac > 0.01 && turns > 0) {
-        sessionMsgs = (turns * remainingFrac) / utilFrac;
+      // Extrapolate remaining session msgs from observed turns vs util used.
+      // Needs a little util so we don't blow up near 0%.
+      if (utilFrac >= 0.005 && turns > 0) {
+        sessionMsgs = Math.max(0, (turns * remainingFrac) / utilFrac);
       }
       // Prefer the more conservative estimate (session vs context)
       const msgs =
         sessionMsgs !== null
           ? Math.min(sessionMsgs, contextMsgsLeft || sessionMsgs)
           : contextMsgsLeft;
-      msgsLeftText = tallyFormatMsgsLeft(msgs);
+      msgsLeftText = tallyFormatMsgsLeft(Math.max(0, msgs));
     } else {
       percent = Math.min(100, Math.round((contextTotal / limit) * 100));
       isExact = contextExact;
